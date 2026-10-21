@@ -2,11 +2,11 @@
 
 **Status:** Submission ready. Public app, competitive auction, full browser-wallet award with both withdrawals, timeout/refund, and no-bid refund are verified against finalized StudioNet receipts. The human owner submits the Portal entry.
 
-**Contribution type:** Project / deployed Intelligent Contract
+**Contribution type:** Project / app with a deployed Intelligent Contract
 
-**One-liner:** A sealed-price reverse auction where GenLayer validators qualify pinned deliverables and deterministic code picks the cheapest eligible bid.
+**One-liner:** A live sealed-bid auction app where GenLayer validators qualify pinned deliverables and contract code awards the cheapest eligible bid.
 
-**Description (under 1,000 characters):** ProofBid lets a sponsor fund one public task with a frozen, observable acceptance criterion. Contributors commit hidden prices and commit-pinned GitHub files, then reveal both after bidding closes. GenLayer validators independently fetch each complete file, verify its raw SHA-256 and exact quote, and judge one criterion as ELIGIBLE, INELIGIBLE, or UNCLEAR. Contract code selects the lowest-priced eligible bid, credits the winner, and returns unused funds to the sponsor. A finalized StudioNet competition rejected a 0.2 test GEN file and awarded a complete 0.4 file. A separate public-app MetaMask run finalized deployment, sealing, funding, commit, reveal, agreeing validator review, award, and both withdrawals across two accounts.
+**Description (under 1,000 characters):** ProofBid is a public GenLayer auction app. A sponsor creates and funds a task with a frozen, observable acceptance criterion. Contributors use the frontend to commit hidden prices and GitHub files pinned to exact commits, then reveal both after bidding closes. GenLayer validators independently fetch each complete file, verify its raw SHA-256 and exact quote, and judge one criterion as ELIGIBLE, INELIGIBLE, or UNCLEAR. Contract code selects the lowest-priced eligible bid, credits the winner, and returns unused funds to the sponsor. The app displays finalized state and transaction receipts without requiring a wallet. A StudioNet competition rejected a cheaper incomplete file and awarded a complete one; a separate two-account MetaMask run completed deployment through award and both withdrawals in the public app.
 
 **How to:** Open the app and inspect the preloaded finalized competitive auction. Read both pinned files, review receipts, settlement, and withdrawals. Clone the public repository and run `pnpm verify:proof` for the competition, `pnpm verify:award` for the full browser-wallet run, `pnpm verify:wallet` for timeout/refund, and `pnpm verify:no-bid` for the no-bid refund. A wallet is only needed to create or act on a new auction.
 
