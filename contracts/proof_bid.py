@@ -78,7 +78,7 @@ class ProofBid(gl.Contract):
         now = _now()
         if not (20 <= len(task) <= 240 and 30 <= len(criterion) <= 300):
             raise gl.vm.UserError("task or criterion length invalid")
-        if budget == u256(0) or not (2 <= max_bids <= 8):
+        if budget == u256(0) or not (1 <= max_bids <= 8):
             raise gl.vm.UserError("budget or capacity invalid")
         if not (now + 60 <= commit_deadline < reveal_deadline < resolution_deadline <= now + 90 * 86400):
             raise gl.vm.UserError("deadlines invalid")

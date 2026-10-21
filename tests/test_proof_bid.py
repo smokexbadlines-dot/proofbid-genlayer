@@ -96,6 +96,38 @@ def test_cheapest_eligible_wins_and_surplus_is_claimable(direct_vm, direct_deplo
             contract.withdraw()
 
 
+def test_single_bid_closes_early_and_awards(direct_vm, direct_deploy, direct_alice):
+    warp(direct_vm)
+    contract = direct_deploy(
+        "contracts/proof_bid.py", TASK, CRITERION, 1000, 1,
+        int((BASE + timedelta(hours=1)).timestamp()),
+        int((BASE + timedelta(hours=2)).timestamp()),
+        int((BASE + timedelta(hours=3)).timestamp()),
+    )
+    sponsor = snap(contract)["sponsor"]
+    direct_vm.mock_llm(r"Judge whether this task has a narrow", json.dumps({"verdict": "CLEAR"}))
+    assert contract.seal() == "CLEAR"
+    assert direct_vm.run_validator() is True
+    direct_vm.value = 1000
+    contract.fund()
+    direct_vm.value = 0
+    with direct_vm.prank(direct_alice):
+        contract.commit_bid(commitment(account(direct_alice), 200, PATH_B, BODY_B, QUOTE_B, NONCE_B))
+        contract.reveal_bid(1, 200, REPO, SHA, PATH_B, sha(BODY_B), QUOTE_B, NONCE_B)
+    evidence(direct_vm, PATH_B, BODY_B, "ELIGIBLE")
+    assert contract.review_bid(1) == "ELIGIBLE"
+    assert direct_vm.run_validator() is True
+    assert contract.settle() == "AWARDED"
+    assert snap(contract)["winner"] == 1
+    assert json.loads(contract.get_account(account(direct_alice)))["claimable_wei"] == "200"
+    assert json.loads(contract.get_account(sponsor))["claimable_wei"] == "800"
+    with direct_vm.prank(direct_alice):
+        contract.withdraw()
+    contract.withdraw()
+    assert json.loads(contract.get_account(account(direct_alice)))["claimable_wei"] == "0"
+    assert json.loads(contract.get_account(sponsor))["claimable_wei"] == "0"
+
+
 def test_forged_leader_verdict_is_rejected(direct_vm, direct_deploy, direct_alice, direct_bob):
     contract = deploy(direct_vm, direct_deploy)
     add_bids(contract, direct_vm, direct_alice, direct_bob)
