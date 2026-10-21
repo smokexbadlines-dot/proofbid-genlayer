@@ -29,7 +29,7 @@ The contract checks a published artifact against a written rubric. It does not r
 
 ## Why this is distinct from earlier work
 
-[Marginal Contribution Pool](https://github.com/smokexbadlines-dot/marginal-contribution-pool-genlayer) awards fixed rewards in submission order for newly covered goals. ProofBid is a sealed-price competition with one minimum-cost eligible winner and a sponsor surplus refund. [Release Covenant](https://github.com/smokexbadlines-dot/release-covenant-genlayer) carries an objection into a separate repair round. ProofBid has neither an objection nor repair: qualification is an input to a deterministic clearing rule.
+[PACTPROOF](https://github.com/smokexbadlines-dot/pactproof-genlayer) pays an assigned builder against preregistered grant criteria. [Marginal Contribution Pool](https://github.com/smokexbadlines-dot/marginal-contribution-pool-genlayer) awards fixed rewards in submission order for newly covered goals. ProofBid instead hides competing prices until reveal, qualifies each pinned file, then selects one minimum-cost eligible winner and returns the sponsor's surplus. [Release Covenant](https://github.com/smokexbadlines-dot/release-covenant-genlayer) carries an objection into a separate repair round; ProofBid has no objection or repair round.
 
 ## Run locally
 

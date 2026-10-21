@@ -49,6 +49,7 @@ function App() {
   const [auction, setAuction] = useState<Auction | null>(null);
   const [account, setAccount] = useState<`0x${string}` | null>(null);
   const [credit, setCredit] = useState('0');
+  const [publicCredits, setPublicCredits] = useState<{sponsor: string | null; winner: string | null}>({sponsor: null, winner: null});
   const [txs, setTxs] = useState<TrackedTx[]>(() => getStored(TX_KEY, []));
   const [secrets, setSecrets] = useState<RevealSecret[]>(() => getStored(SECRET_KEY, []));
   const [busy, setBusy] = useState(false);
@@ -76,10 +77,20 @@ function App() {
   const refresh = useCallback(async (target = address, wallet = account) => {
     if (!target) return;
     setLoading(true);
+    setPublicCredits({sponsor: null, winner: null});
     try {
       const next = await readAuction(target);
       setAuction(next);
       setCredit(wallet ? await readCredit(target, wallet) : '0');
+      const winningOwner = next.bids.find(b => b.id === next.winner)?.owner;
+      const [sponsorBalance, winnerBalance] = await Promise.allSettled([
+        readCredit(target, next.sponsor as `0x${string}`),
+        winningOwner ? readCredit(target, winningOwner as `0x${string}`) : Promise.resolve(null),
+      ]);
+      setPublicCredits({
+        sponsor: sponsorBalance.status === 'fulfilled' ? sponsorBalance.value : null,
+        winner: winnerBalance.status === 'fulfilled' ? winnerBalance.value : null,
+      });
       setError('');
     } catch (cause) {
       setAuction(null);
@@ -219,6 +230,7 @@ function App() {
   const remaining = auction ? (BigInt(auction.budget_wei) - BigInt(auction.funded_wei)).toString() : '0';
   const commitsClosed = auction && (Date.now() / 1000 >= auction.commit_deadline || auction.bids.length >= auction.max_bids);
   const revealsClosed = auction && (Date.now() / 1000 >= auction.reveal_deadline || (commitsClosed && auction.bids.every(b => b.status !== 'COMMITTED')));
+  const isDemo = address?.toLowerCase() === DEMO_ADDRESS.toLowerCase();
 
   return <>
     <div className="ambient ambient-one"/><div className="ambient ambient-two"/>
@@ -267,6 +279,7 @@ function App() {
            {!auction ? <div className="empty panel"><Code2 size={36}/><h3>No auction loaded</h3><p>Check the StudioNet connection, or paste another ProofBid address to inspect its finalized state.</p></div> : <>
             <div className="auction-banner"><div><div className="eyebrow">FINALIZED CONTRACT STATE</div><h3>{auction.task}</h3><p>{auction.criterion}</p></div><span className="status-pill">{stage(auction)}</span></div>
             <div className="stats"><div><span>SPONSOR BUDGET</span><strong>{formatGen(auction.budget_wei)}</strong></div><div><span>FUNDED</span><strong>{formatGen(auction.funded_wei)}</strong></div><div><span>BIDS</span><strong>{auction.bids.length} / {auction.max_bids}</strong></div><div><span>WINNING PRICE</span><strong>{auction.winner ? formatGen(auction.winning_price_wei) : '—'}</strong></div></div>
+            {auction.settled && <div className="public-ledger" aria-label="Finalized claimable balances"><div><span>SPONSOR · {short(auction.sponsor, 6)}</span><strong>Claimable: {publicCredits.sponsor === null ? 'Unavailable' : formatGen(publicCredits.sponsor)}</strong>{isDemo && <a href={`${explorer}/tx/${proofTx('Sponsor withdrawal')}`} target="_blank" rel="noreferrer">Withdrawal receipt <ExternalLink size={12}/></a>}</div>{auction.winner > 0 && <div><span>WINNER · {short(auction.bids[auction.winner - 1].owner, 6)}</span><strong>Claimable: {publicCredits.winner === null ? 'Unavailable' : formatGen(publicCredits.winner)}</strong>{isDemo && <a href={`${explorer}/tx/${proofTx('Winner withdrawal')}`} target="_blank" rel="noreferrer">Withdrawal receipt <ExternalLink size={12}/></a>}</div>}</div>}
             <div className="grid two"><div className="panel"><div className="panel-head"><span className="badge">01</span><h3>Sponsor controls</h3></div><div className="deadline"><Clock3 size={16}/><span>Commit closes {date(auction.commit_deadline)}</span></div><p>Frozen terms are set. Seal only when the criterion is clear enough for validators to judge from one file.</p>
               {!auction.sealed && <button className="secondary full" disabled={busy || account?.toLowerCase() !== auction.sponsor.toLowerCase()} onClick={() => void call('Seal criterion', 'seal')}>Seal criterion</button>}
               {canFund && <button className="primary full" disabled={busy} onClick={() => void call('Fund auction', 'fund', [], BigInt(remaining))}>Fund remaining {formatGen(remaining)}</button>}
@@ -284,7 +297,7 @@ function App() {
                 {b.status === 'COMMITTED' && account?.toLowerCase() === b.owner.toLowerCase() && commitsClosed && Date.now() / 1000 < auction.reveal_deadline && <button className="secondary" disabled={busy} onClick={() => void reveal(b.id, b.commitment)}>Reveal bid</button>}
                 {b.status === 'REVEALED' && revealsClosed && Date.now() / 1000 < auction.resolution_deadline && <button className="secondary" disabled={busy} onClick={() => void call(`Review bid ${b.id}`, 'review_bid', [b.id])}>Review evidence</button>}
               </div></div>) : <div className="empty compact-empty">No bids committed yet.</div>}</div>
-            <div className="grid two footer-panels"><div className="panel"><div className="panel-head"><span className="badge amber"><Gavel size={16}/></span><h3>Settle & withdraw</h3></div><p>Anyone may settle when all revealed bids have final verdicts, or once the resolution deadline passes. Unreviewed bids then fail closed.</p><button className="secondary full" disabled={busy || !account || auction.settled} onClick={() => void call('Settle auction', 'settle')}>Settle auction</button><div className="divider"/><div className="claim-row"><div><span>YOUR CLAIMABLE BALANCE</span><strong>{formatGen(credit)}</strong></div><button className="primary" disabled={busy || !account || BigInt(credit) === 0n} onClick={() => void call('Withdraw GEN', 'withdraw')}>Withdraw</button></div></div>
+            <div className="grid two footer-panels"><div className="panel"><div className="panel-head"><span className="badge amber"><Gavel size={16}/></span><h3>Settle & withdraw</h3></div><p>Anyone may settle when all revealed bids have final verdicts, or once the resolution deadline passes. Unreviewed bids then fail closed.</p><button className="secondary full" disabled={busy || !account || auction.settled} onClick={() => void call('Settle auction', 'settle')}>Settle auction</button><div className="divider"/><div className="claim-row"><div><span>YOUR CLAIMABLE BALANCE</span><strong>{account ? formatGen(credit) : 'Connect wallet'}</strong></div><button className="primary" disabled={busy || !account || BigInt(credit) === 0n} onClick={() => void call('Withdraw GEN', 'withdraw')}>Withdraw</button></div></div>
               <div className="panel"><div className="panel-head"><span className="badge purple"><GitCommitHorizontal size={16}/></span><h3>Reveal key backup</h3></div><p>Your nonce lives only in this browser unless you export it. Restore a saved JSON key here before revealing.</p><textarea className="import-box" rows={4} placeholder="Paste saved reveal JSON" value={importText} onChange={e => setImportText(e.target.value)}/><button className="secondary full" disabled={!importText} onClick={importSecret}>Import reveal key</button><div className="callout"><ShieldCheck size={17}/><span>Never publish your reveal key before the commit window closes.</span></div></div></div>
           </>}
         </>}

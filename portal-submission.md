@@ -1,6 +1,6 @@
 # ProofBid Portal packet
 
-**Status:** Public app and live StudioNet proof ready for review. Portal submission remains with the human owner.
+**Status:** Public app and live StudioNet proof ready for review. Browser-wallet writes remain unverified; see the [submission audit](submission-audit.md). Portal submission remains with the human owner.
 
 **Contribution type:** Project / deployed Intelligent Contract
 
