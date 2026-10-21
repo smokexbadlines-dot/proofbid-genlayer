@@ -5,6 +5,7 @@ import { ArrowRight, ArrowUpRight, Check, CircleHelp, Clock3, Code2, Coins, Exte
 import { appeal, connectWallet, deploy, explorer, formatGen, makeCommitment, parseGen,
   rawUrl, readAuction, readCredit, sha256, txStatus, validAddress, write } from './genlayer';
 import type { Auction, RevealSecret, TrackedTx } from './types';
+import proof from '../deploy/proof.json';
 import './styles.css';
 
 const TX_KEY = 'proofbid-tx-v1';
@@ -12,6 +13,8 @@ const ADDRESS_KEY = 'proofbid-address-v1';
 const SECRET_KEY = 'proofbid-reveal-v1';
 const DEFAULT_TASK = 'Publish a migration note for both supported database engines.';
 const DEFAULT_CRITERION = 'The file explicitly gives migration and rollback steps for PostgreSQL and SQLite.';
+const DEMO_ADDRESS = proof.contract_address as `0x${string}`;
+const proofTx = (label: string) => proof.transactions.find(item => item.label === label)?.hash;
 
 function getStored<T>(key: string, fallback: T): T {
   try { return JSON.parse(localStorage.getItem(key) || '') as T; } catch { return fallback; }
@@ -41,7 +44,7 @@ function stage(a: Auction): string {
 }
 
 function App() {
-  const [addressInput, setAddressInput] = useState(localStorage.getItem(ADDRESS_KEY) || '');
+  const [addressInput, setAddressInput] = useState(localStorage.getItem(ADDRESS_KEY) || DEMO_ADDRESS);
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const [auction, setAuction] = useState<Auction | null>(null);
   const [account, setAccount] = useState<`0x${string}` | null>(null);
@@ -85,7 +88,7 @@ function App() {
   }, [address, account]);
 
   useEffect(() => {
-    const candidate = new URLSearchParams(location.search).get('contract') || localStorage.getItem(ADDRESS_KEY) || '';
+    const candidate = new URLSearchParams(location.search).get('contract') || localStorage.getItem(ADDRESS_KEY) || DEMO_ADDRESS;
     if (validAddress(candidate)) { setAddress(candidate); setAddressInput(candidate); }
   }, []);
   useEffect(() => { if (address) void refresh(address, account); }, [address, account, refresh]);
@@ -245,6 +248,11 @@ function App() {
 
       <section className="metrics" aria-label="Protocol rules"><div><span>01 /</span><strong>Frozen rubric</strong><small>Terms cannot change after deployment.</small></div><div><span>02 /</span><strong>Pinned evidence</strong><small>Exact Git commit and SHA-256 checked.</small></div><div><span>03 /</span><strong>Open settlement</strong><small>Anyone can review and settle on time.</small></div></section>
 
+      <section className="live-proof" aria-label="Finalized StudioNet demonstration"><div className="live-proof-head"><div><div className="eyebrow">LIVE STUDIO NET PROOF</div><h2>Cheapest is not always eligible.</h2><p>Two pinned files were reviewed. The 0.2 GEN bid failed the rubric; the 0.4 GEN bid met it and won. Settlement and both withdrawals are finalized.</p></div><span className="proof-tag"><Check size={14}/> FINALIZED</span></div>
+        <div className="proof-results"><div><span>BID 01 · 0.2 GEN</span><strong className="proof-no">INELIGIBLE</strong><a href={`${explorer}/tx/${proofTx('Review cheaper bid')}`} target="_blank" rel="noreferrer">Review receipt <ExternalLink size={12}/></a></div><div><span>BID 02 · 0.4 GEN</span><strong className="proof-yes">ELIGIBLE · WINNER</strong><a href={`${explorer}/tx/${proofTx('Review complete bid')}`} target="_blank" rel="noreferrer">Review receipt <ExternalLink size={12}/></a></div><div><span>SETTLEMENT</span><strong>0.1 GEN SURPLUS</strong><a href={`${explorer}/tx/${proofTx('Settle auction')}`} target="_blank" rel="noreferrer">Award receipt <ExternalLink size={12}/></a></div></div>
+        <div className="proof-links"><button className="secondary" onClick={() => { attach(DEMO_ADDRESS); document.getElementById('workspace')?.scrollIntoView({ behavior: 'smooth' }); }}>Inspect finalized auction <ArrowRight size={15}/></button><a href={`https://github.com/${proof.source_repo}/blob/main/deploy/proof.json`} target="_blank" rel="noreferrer">Full proof manifest <ArrowUpRight size={14}/></a><a href={`${explorer}/tx/${proofTx('Unauthorized reveal rejected')}`} target="_blank" rel="noreferrer">Rejected reveal <ArrowUpRight size={14}/></a></div>
+      </section>
+
       <section id="workspace" className="workspace"><div className="section-heading"><div><div className="eyebrow">WORKSPACE</div><h2>Operate the auction</h2></div><div className="tabs"><button className={tab === 'explore' ? 'active' : ''} onClick={() => setTab('explore')}>Explore</button><button className={tab === 'create' ? 'active' : ''} onClick={() => setTab('create')}>Create</button></div></div>
         {error && <div className="alert error" role="alert">{error}</div>}{message && <div className="alert notice">{message}</div>}
         {tab === 'create' ? <div className="grid two"><form className="panel form" onSubmit={e => void handleCreate(e)}><div className="panel-head"><span className="badge">01</span><h3>Define a new auction</h3></div>
@@ -256,7 +264,7 @@ function App() {
           <button className="primary full" disabled={busy || !account} type="submit">Deploy contract <ArrowRight size={16}/></button><small>After finality, seal the criterion and fund the budget in Explore.</small></form>
           <aside className="panel explainer"><div className="panel-head"><span className="badge amber">!</span><h3>How the rules work</h3></div><p>A validator first checks that your criterion is observable from one UTF-8 file. Contributors then commit to a price and artifact before revealing either.</p><ol><li>Fund the exact budget.</li><li>Collect 2–8 sealed bids.</li><li>Review each revealed file against the frozen criterion.</li><li>Settle the lowest eligible price and credit any surplus.</li></ol><div className="callout"><CircleHelp size={18}/><span>At capacity, commits close early. If every bidder reveals, review can start early. All unresolved bids expire at the resolution deadline.</span></div></aside></div> : <>
           <div className="attach-bar"><label htmlFor="contract-address">CONTRACT ADDRESS</label><input id="contract-address" value={addressInput} placeholder="0x…" onChange={e => setAddressInput(e.target.value)}/><button className="secondary" onClick={() => validAddress(addressInput) ? attach(addressInput) : setError('Enter a valid 0x contract address.')}>Load contract</button><button className="icon-button" title="Refresh finalized state" onClick={() => void refresh()} disabled={!address || loading}><RefreshCcw size={17} className={loading ? 'spin' : ''}/></button></div>
-          {!auction ? <div className="empty panel"><Code2 size={36}/><h3>No auction loaded</h3><p>Paste a ProofBid contract address to see finalized state, or deploy your own. Recorded live proof will appear here after a network demonstration is verified.</p></div> : <>
+           {!auction ? <div className="empty panel"><Code2 size={36}/><h3>No auction loaded</h3><p>Check the StudioNet connection, or paste another ProofBid address to inspect its finalized state.</p></div> : <>
             <div className="auction-banner"><div><div className="eyebrow">FINALIZED CONTRACT STATE</div><h3>{auction.task}</h3><p>{auction.criterion}</p></div><span className="status-pill">{stage(auction)}</span></div>
             <div className="stats"><div><span>SPONSOR BUDGET</span><strong>{formatGen(auction.budget_wei)}</strong></div><div><span>FUNDED</span><strong>{formatGen(auction.funded_wei)}</strong></div><div><span>BIDS</span><strong>{auction.bids.length} / {auction.max_bids}</strong></div><div><span>WINNING PRICE</span><strong>{auction.winner ? formatGen(auction.winning_price_wei) : '—'}</strong></div></div>
             <div className="grid two"><div className="panel"><div className="panel-head"><span className="badge">01</span><h3>Sponsor controls</h3></div><div className="deadline"><Clock3 size={16}/><span>Commit closes {date(auction.commit_deadline)}</span></div><p>Frozen terms are set. Seal only when the criterion is clear enough for validators to judge from one file.</p>

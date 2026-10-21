@@ -77,8 +77,7 @@ export async function write(address: `0x${string}`, account: `0x${string}`, func
 
 export async function txStatus(hash: `0x${string}`) {
   const tx = await readClient().getTransaction({ hash: hash as TransactionHash });
-  const decoded = tx.txDataDecoded;
-  const contractAddress = decoded && 'contractAddress' in decoded ? decoded.contractAddress : tx.recipient;
+  const contractAddress = (tx.data as {contract_address?: string} | undefined)?.contract_address;
   const receipts = (tx.consensus_data as {leader_receipt?: Array<{mode?: string; execution_result?: string}>} | undefined)?.leader_receipt;
   const leader = receipts?.find(r => r.mode === 'leader');
   return {

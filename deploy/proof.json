@@ -1,9 +1,34 @@
 {
-  "status": "NOT_PROVEN",
+  "status": "PROVEN",
   "network": "studionet",
-  "contract_address": null,
-  "source_commit_at_deploy": null,
-  "source_sha256": null,
-  "transactions": [],
-  "note": "This is a pending evidence manifest. No deployment or live outcome is claimed."
+  "contract_address": "0x0cF6733050F0c338B13ea76Aff1472ddC5755d26",
+  "source_repo": "smokexbadlines-dot/proofbid-genlayer",
+  "source_commit_at_deploy": "f625b40fd83ef7e7ab5de65cb79b61604490d430",
+  "source_sha256": "b0ba43b9efe09093b874ff7fe215075001a56e0d73a950446fa86d34e5e10ef8",
+  "deployed_source_sha256": "0181c135d935337f422b37495ccb6aab9c132f553e8bc706b9b01546afb9b408",
+  "note": "Studio converted LF to CRLF when source was pasted into its editor. The verifier compares normalized source bytes and both raw hashes. This is StudioNet test GEN, not a mainnet payment.",
+  "transactions": [
+    {"label":"Deploy","hash":"0x489042b1e4d14279e49a13fb839d6c613e6d3d31217af805e13663c680357e3c","expected_execution":"SUCCESS"},
+    {"label":"Seal clear criterion","hash":"0x40a186ad525f2fac0db57a4b6f4c226c52db27288cced8bc78d67bfd0f281ec1","expected_execution":"SUCCESS","expected_payload":"\"CLEAR\"","expected_validator_vote":"idle"},
+    {"label":"Fund budget and credit excess","hash":"0x9a668344d2c9ed7102b9b34c67eba5ed18bd59235464ec84144ef0dc33dc7b87","expected_execution":"SUCCESS"},
+    {"label":"Commit cheaper bid","hash":"0x633bc530101b83e5f192bf8566c6765280d7cf59dd97707587d5d7a8cd90a573","expected_execution":"SUCCESS"},
+    {"label":"Commit complete bid","hash":"0x9c374a540db0644d1ed96af33c91e4dba000d64ab9f8079c5caea8bae5816619","expected_execution":"SUCCESS"},
+    {"label":"Reveal complete bid","hash":"0x29f7d30f763c122ac633531fb2a3d416223e4981f60cb328ad85d44a1f420bf1","expected_execution":"SUCCESS"},
+    {"label":"Reveal cheaper bid","hash":"0x9c13513285b11ecd33fe6889dc927020c6ffcbf711edb266711d9803a8d3c6ef","expected_execution":"SUCCESS"},
+    {"label":"Review cheaper bid","hash":"0xb63c253b98ccd87767b68f9815d193680ab3bdc531eecce7e7bbb27dd1bcb9a4","expected_execution":"SUCCESS","expected_payload":"\"INELIGIBLE\"","require_validator_agreement":true},
+    {"label":"Review complete bid","hash":"0x52a3f6ab65dcfbc321da75ef0dff3788b13651c84e19c011c5f9952f42c50b54","expected_execution":"SUCCESS","expected_payload":"\"ELIGIBLE\"","require_validator_agreement":true},
+    {"label":"Settle auction","hash":"0xaa31b1d52ff9d97a0b2dd549b66e45ba5bdd7fb3f679aaafd7ab5faf89bedb05","expected_execution":"SUCCESS","expected_payload":"\"AWARDED\""},
+    {"label":"Sponsor withdrawal","hash":"0x0cc4967aa70b03b914745ba448dee2df733e2fa523f14d7b4c9e850aff116a14","expected_execution":"SUCCESS"},
+    {"label":"Winner withdrawal","hash":"0x3497857caad7a37a63145a25e24ee8d0a6df11afe0f0984edebe0ee32396c1c9","expected_execution":"SUCCESS"},
+    {"label":"Unauthorized reveal rejected","hash":"0x69b5a1ce321f91f83d020a8418c164fa7182f529cd0552dac823d00909eca2d5","expected_execution":"ERROR","expected_payload":"bid owner only","expected_sender":"0xfbCD0A496d70FdE49760210a282714dfdA098b84"}
+  ],
+  "evidence": [
+    {"bid_id":1,"path":"docs/partial.md","body_sha256":"76a43bd79f4270465349d5d561da9b7fc804d02628c1182bdd5b6b9ccf8ed5ff","quote":"PostgreSQL migration: run","verdict":"INELIGIBLE","price_wei":"200000000000000000"},
+    {"bid_id":2,"path":"docs/complete.md","body_sha256":"815b93fb069de1cc3f3c60bb50a204e8579e64aa4f61646b994c1f635d067026","quote":"SQLite migration: create a replacement","verdict":"ELIGIBLE","price_wei":"400000000000000000"}
+  ],
+  "expected_snapshot": {"sealed":true,"settled":true,"winner":2,"winning_price_wei":"400000000000000000","budget_wei":"500000000000000000","funded_wei":"500000000000000000"},
+  "expected_accounts": [
+    {"address":"0x7B5cFF43D9b7bbc6F859bE8F28cfb385c1Ee68f2","claimable_wei":"0"},
+    {"address":"0x15f03a35A83B4eC4bC19773851D0b436DE01CCf6","claimable_wei":"0"}
+  ]
 }

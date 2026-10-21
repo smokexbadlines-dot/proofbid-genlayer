@@ -1,9 +1,9 @@
 # Two-minute ProofBid demo script
 
-1. **0:00–0:20** Open the public app. Explain the frozen task, one acceptance criterion, GEN budget, and bid capacity. Point out that the app reads finalized onchain state without a wallet.
+1. **0:00–0:20** Open the app preview and its preloaded contract `0x0cF6733050F0c338B13ea76Aff1472ddC5755d26`. Explain the frozen task, one acceptance criterion, 0.5 test GEN budget, and two-bid capacity. The app reads finalized onchain state without a wallet.
 2. **0:20–0:45** Open the public source commit. Show `docs/partial.md` and `docs/complete.md`; the first lacks SQLite steps, while the second has migration and rollback steps for both engines.
 3. **0:45–1:10** Show the finalized commit and reveal transactions. Explain that commitments hid each price with a 32-byte nonce until the commit window closed. Open each pinned file and its exact quote.
-4. **1:10–1:35** Show the two finalized review transactions and their leader execution results. The cheaper partial file should be `INELIGIBLE`, the complete one `ELIGIBLE`. Explain that selected validators independently fetched the same raw bytes and agreed on the bounded verdict.
-5. **1:35–1:55** Show settlement and final state: the complete bid wins at its stated price, and the sponsor gets the unused budget. Show winner and sponsor withdrawal receipts. Finish with `pnpm verify:proof` against live finalized state.
+4. **1:10–1:35** Open [cheaper review](https://explorer-studio.genlayer.com/tx/0xb63c253b98ccd87767b68f9815d193680ab3bdc531eecce7e7bbb27dd1bcb9a4) and [complete review](https://explorer-studio.genlayer.com/tx/0x52a3f6ab65dcfbc321da75ef0dff3788b13651c84e19c011c5f9952f42c50b54). The cheaper file is `INELIGIBLE`; the complete one is `ELIGIBLE`. Each review has an independent agreeing validator receipt.
+5. **1:35–1:55** Open [settlement](https://explorer-studio.genlayer.com/tx/0xaa31b1d52ff9d97a0b2dd549b66e45ba5bdd7fb3f679aaafd7ab5faf89bedb05). Bid 2 wins at 0.4 test GEN and the sponsor receives the 0.1 test GEN surplus. Show [sponsor](https://explorer-studio.genlayer.com/tx/0x0cc4967aa70b03b914745ba448dee2df733e2fa523f14d7b4c9e850aff116a14) and [winner](https://explorer-studio.genlayer.com/tx/0x3497857caad7a37a63145a25e24ee8d0a6df11afe0f0984edebe0ee32396c1c9) withdrawals and the [rejected unauthorized reveal](https://explorer-studio.genlayer.com/tx/0x69b5a1ce321f91f83d020a8418c164fa7182f529cd0552dac823d00909eca2d5). Finish with `pnpm verify:proof`.
 
-Do not use this script to claim a live result until `deploy/proof.json` is populated and its verifier passes.
+The current Sites preview is private. Make it public before using the app URL in a Portal submission. All amounts are StudioNet test GEN.

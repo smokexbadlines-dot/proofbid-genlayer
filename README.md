@@ -2,7 +2,7 @@
 
 ProofBid is a standalone GenLayer Native reverse auction for public, evidence-backed deliverables. A sponsor freezes one task, one observable acceptance criterion, a budget, a bid cap, and three deadlines. Bidders commit to a hidden price and a commit-pinned GitHub file. After the commit window closes, they reveal. GenLayer validators independently fetch each file, verify its raw SHA-256 and exact quote, and judge whether the complete file satisfies the single criterion. Ordinary contract code selects the lowest-priced `ELIGIBLE` bid and credits the winner and sponsor's surplus for pull withdrawal.
 
-**Current evidence status:** Local direct-mode tests pass and StudioNet parses the contract schema under the pinned runner. A finalized live auction has **not** yet been recorded. `deploy/proof.json` intentionally says `NOT_PROVEN` until receipts, source hash, and state read-backs are verified. The hosted app, if published, must not be treated as onchain proof by itself.
+**Current evidence status:** A complete [StudioNet auction](https://explorer-studio.genlayer.com/address/0x0cF6733050F0c338B13ea76Aff1472ddC5755d26) is finalized. The [proof manifest](deploy/proof.json) records 13 transactions, two independent agreeing review receipts, settlement, both withdrawals, and an expected rejected reveal. Run `pnpm verify:proof` to check the receipts, pinned evidence, deployed code, and latest finalized state. The seal receipt reports leader `SUCCESS` and validator `idle`; the manifest records this precisely and does not claim validator agreement for that step. All GEN amounts in the demo are StudioNet test funds.
 
 ```mermaid
 flowchart LR
@@ -59,10 +59,10 @@ PROOFBID1
 <64-character hex nonce>
 ```
 
-Use `docs/partial.md` and `docs/complete.md` as an illustrative pair for the default criterion. Once this repository is public, pin both paths to the same full commit SHA, and verify that GenLayer validators can fetch them before funding a live demo.
+The [partial file](docs/partial.md) and [complete file](docs/complete.md) were pinned to commit [`f625b40`](https://github.com/smokexbadlines-dot/proofbid-genlayer/tree/f625b40fd83ef7e7ab5de65cb79b61604490d430) for the live demo. The 0.2 GEN partial bid was [INELIGIBLE](https://explorer-studio.genlayer.com/tx/0xb63c253b98ccd87767b68f9815d193680ab3bdc531eecce7e7bbb27dd1bcb9a4); the 0.4 GEN complete bid was [ELIGIBLE](https://explorer-studio.genlayer.com/tx/0x52a3f6ab65dcfbc321da75ef0dff3788b13651c84e19c011c5f9952f42c50b54). Both review transactions have an independent validator receipt with an agreeing verdict. [Settlement](https://explorer-studio.genlayer.com/tx/0xaa31b1d52ff9d97a0b2dd549b66e45ba5bdd7fb3f679aaafd7ab5faf89bedb05) selected bid 2 and credited the 0.1 GEN surplus to the sponsor. The sponsor and winner later withdrew their credits.
 
 ## Proof and source
 
-`deploy/proof.json` records the final deployment and transaction IDs when a live demo exists. `pnpm verify:proof` independently reads each transaction, checks `FINALIZED` and leader execution, checks the current source hash against the deployed source record, and reads the latest finalized auction snapshot. It deliberately fails while the manifest is pending.
+`deploy/proof.json` records the live deployment, transaction IDs, evidence digests, and expected finalized state. `pnpm verify:proof` fetches the transactions, checks `FINALIZED` and execution, confirms both review validators agreed, compares source bytes after Studio's line-ending conversion, hashes the pinned files, and reads the latest finalized snapshot and withdrawal balances. An unauthorized reveal from a different wallet is [recorded as `FINALIZED/ERROR`](https://explorer-studio.genlayer.com/tx/0x69b5a1ce321f91f83d020a8418c164fa7182f529cd0552dac823d00909eca2d5).
 
 Official references: [Equivalence Principle](https://docs.genlayer.com/developers/intelligent-contracts/equivalence-principle), [Optimistic Democracy](https://docs.genlayer.com/understand-genlayer-protocol/core-concepts/optimistic-democracy), [Prompt Injection](https://docs.genlayer.com/developers/intelligent-contracts/security-and-best-practices/prompt-injection).
