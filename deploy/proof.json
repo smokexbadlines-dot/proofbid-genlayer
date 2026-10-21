@@ -1,0 +1,9 @@
+{
+  "status": "NOT_PROVEN",
+  "network": "studionet",
+  "contract_address": null,
+  "source_commit_at_deploy": null,
+  "source_sha256": null,
+  "transactions": [],
+  "note": "This is a pending evidence manifest. No deployment or live outcome is claimed."
+}
