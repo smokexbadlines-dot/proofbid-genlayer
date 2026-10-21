@@ -1,0 +1,48 @@
+{
+  "status": "PROVEN",
+  "scenario": "Public frontend wallet award: a pinned eligible file is committed, revealed, reviewed, awarded, and both accounts withdraw StudioNet test GEN.",
+  "network": "studionet",
+  "frontend_url": "https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site",
+  "contract_address": "0x0701Dedfee0a05a9Fd3e2634f3072e44d5A41e18",
+  "source_repo": "smokexbadlines-dot/proofbid-genlayer",
+  "source_commit_at_deploy": "416c61e316856672cd8222b3acbffec339cdca40",
+  "source_sha256": "a428affb02eef02cf93c77465c215bb14de619dd4152681a0b4efe3fcf4b763f",
+  "sponsor": "0x106E2A74C9233e1981b0B5692355163A825F4422",
+  "bidder": "0xfbCD0A496d70FdE49760210a282714dfdA098b84",
+  "transactions": [
+    {"label":"Browser wallet deploy","hash":"0x97071df10fe38d62fa2a80dfe9be4a9b04ed314af08611576113d8052b9f5e44","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","require_validator_agreement":false},
+    {"label":"Browser wallet seal","hash":"0x91489eb0d47f3a36076cda07a593db523d1215694c7d9b977e7ff25500ad7fda","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","expected_payload":"\"CLEAR\"","require_validator_agreement":true},
+    {"label":"Browser wallet fund 0.004 test GEN","hash":"0x390425ed6485ff55919143a5c2da93a54b58d0b2dc701c7f62171dcdd1b72e37","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","require_validator_agreement":false},
+    {"label":"Browser wallet commit bid","hash":"0xc17b82a32a122e52275738cf391baf7c19366be6b27dd959c312c5d9c68d2d9c","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","require_validator_agreement":true},
+    {"label":"Browser wallet reveal bid","hash":"0xc19dd035842ae73d0e2db06aca8af62b3dbace51fa5f32e46138988e2b85c87d","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","require_validator_agreement":true},
+    {"label":"Browser wallet review bid","hash":"0x808e188d556b35acc3565d669667bc37004f7d9097cfb476340e6a6d2d02556c","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","expected_payload":"\"ELIGIBLE\"","require_validator_agreement":true},
+    {"label":"Browser wallet award settlement","hash":"0xd03c814956f93357fef9835c4305b652a08162b45fd0a391ad4df74165c560f5","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","expected_payload":"\"AWARDED\"","require_validator_agreement":false},
+    {"label":"Browser wallet winner withdrawal","hash":"0x957d03585d0ad5b5369bd79542e3f80c8d42bc71f5fcb8a4cda811f4c3572d25","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","require_validator_agreement":false},
+    {"label":"Browser wallet sponsor withdrawal","hash":"0xac57062bebd2fb055893403cd271a0a5e8d5e1334c4f4a0aec45b7b4b37f8fdf","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","require_validator_agreement":true}
+  ],
+  "expected_snapshot": {
+    "sealed": true,
+    "budget_wei": "4000000000000000",
+    "funded_wei": "4000000000000000",
+    "max_bids": 1,
+    "settled": true,
+    "winner": 1,
+    "winning_price_wei": "2000000000000000"
+  },
+  "expected_bid": {
+    "id": 1,
+    "owner": "0xfbCD0A496d70FdE49760210a282714dfdA098b84",
+    "price_wei": "2000000000000000",
+    "repo": "smokexbadlines-dot/proofbid-genlayer",
+    "sha": "f625b40fd83ef7e7ab5de65cb79b61604490d430",
+    "path": "docs/complete.md",
+    "body_sha": "815b93fb069de1cc3f3c60bb50a204e8579e64aa4f61646b994c1f635d067026",
+    "quote": "SQLite migration: create a replacement",
+    "status": "ELIGIBLE",
+    "attempts": 1
+  },
+  "expected_accounts": [
+    {"address":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","claimable_wei":"0"},
+    {"address":"0x106E2A74C9233e1981b0B5692355163A825F4422","claimable_wei":"0"}
+  ]
+}

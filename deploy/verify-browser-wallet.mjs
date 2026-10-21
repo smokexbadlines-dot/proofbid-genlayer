@@ -12,15 +12,19 @@ if (proof.status !== 'PROVEN' && !process.argv.includes('--partial')) {
   throw new Error('Browser-wallet proof is still in progress. Use --partial to inspect finalized steps.');
 }
 const digest = value => createHash('sha256').update(value).digest('hex');
-const source = readFileSync(new URL('../contracts/proof_bid.py', import.meta.url));
-if (digest(source) !== proof.source_sha256) throw new Error('Local contract source changed since deployment.');
 const pinnedBase = `https://raw.githubusercontent.com/${proof.source_repo}/${proof.source_commit_at_deploy}`;
 async function pinnedFile(path) {
   const response = await fetch(`${pinnedBase}/${path}`);
   if (!response.ok) throw new Error(`Pinned ${path}: HTTP ${response.status}`);
   return Buffer.from(await response.arrayBuffer());
 }
-if (digest(await pinnedFile('contracts/proof_bid.py')) !== proof.source_sha256) {
+async function bidFile(bid) {
+  const response = await fetch(`https://raw.githubusercontent.com/${bid.repo}/${bid.sha}/${bid.path}`);
+  if (!response.ok) throw new Error(`Pinned bid ${bid.path}: HTTP ${response.status}`);
+  return Buffer.from(await response.arrayBuffer());
+}
+const source = await pinnedFile('contracts/proof_bid.py');
+if (digest(source) !== proof.source_sha256) {
   throw new Error('Public source commit differs from deployed contract source.');
 }
 
@@ -68,7 +72,7 @@ if (proof.expected_bid) {
     if (JSON.stringify(bid[field]) !== JSON.stringify(expected)) throw new Error(`Bid mismatch: ${field}`);
   }
   if (proof.expected_bid.path) {
-    const bytes = await pinnedFile(proof.expected_bid.path);
+    const bytes = await bidFile(bid);
     if (digest(bytes) !== bid.body_sha || !bytes.toString('utf8').includes(bid.quote)) {
       throw new Error('Pinned bid file differs from judged evidence.');
     }

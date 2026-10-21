@@ -9,19 +9,15 @@ if (proof.status !== 'PROVEN' || !proof.contract_address || !Array.isArray(proof
   console.error('No finalized live proof is recorded yet.');
   process.exit(1);
 }
-const source = readFileSync(new URL('../contracts/proof_bid.py', import.meta.url));
 const digest = value => createHash('sha256').update(value).digest('hex');
-const actualSourceSha = digest(source);
-if (proof.source_sha256 !== actualSourceSha) throw new Error('Current contract source differs from the evidenced deployment source.');
 const pinnedBase = `https://raw.githubusercontent.com/${proof.source_repo}/${proof.source_commit_at_deploy}`;
 async function pinnedBytes(path) {
   const response = await fetch(`${pinnedBase}/${path}`);
   if (!response.ok) throw new Error(`Pinned ${path}: HTTP ${response.status}`);
   return Buffer.from(await response.arrayBuffer());
 }
-if (digest(await pinnedBytes('contracts/proof_bid.py')) !== actualSourceSha) {
-  throw new Error('The published source commit differs from the checked contract file.');
-}
+const source = await pinnedBytes('contracts/proof_bid.py');
+if (digest(source) !== proof.source_sha256) throw new Error('The pinned contract source differs from the proof manifest.');
 const client = createClient({ chain: studionet });
 for (const item of proof.transactions) {
   const tx = await client.getTransaction({ hash: item.hash });

@@ -8,7 +8,8 @@
     "build": "tsc --noEmit && vite build",
     "verify:proof": "node deploy/verify-proof.mjs",
     "verify:wallet": "node deploy/verify-browser-wallet.mjs",
-    "verify:no-bid": "node deploy/verify-browser-wallet.mjs --manifest=browser-no-bid-proof.json"
+    "verify:no-bid": "node deploy/verify-browser-wallet.mjs --manifest=browser-no-bid-proof.json",
+    "verify:award": "node deploy/verify-browser-wallet.mjs --manifest=browser-award-proof.json"
   },
   "dependencies": {
     "genlayer-js": "1.1.8",
