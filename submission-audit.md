@@ -38,4 +38,4 @@ A second 0.005 test GEN auction was deployed, sealed, and funded from the other 
 - `pnpm verify:wallet`: PASS for deploy, seal, fund, commit, timeout settlement, and refund withdrawal.
 - Six Python direct-mode tests: PASS in the earlier audit.
 - Public Sites project: active with public access.
-- Public repository: previously pushed; local audit and frontend updates require a final source sync.
+- Public repository: synced to the local audit, frontend, verifier, and logo; working tree clean.
