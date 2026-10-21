@@ -33,11 +33,10 @@ function short(value: string, n = 8) {
   return value.length > 2 * n ? `${value.slice(0, n)}…${value.slice(-n)}` : value;
 }
 
-function stage(a: Auction): string {
+function stage(a: Auction, now: number): string {
   if (a.settled) return a.winner ? 'Awarded' : 'Refunded';
   if (!a.sealed) return 'Draft';
   if (a.funded_wei !== a.budget_wei) return 'Awaiting funding';
-  const now = Date.now() / 1000;
   if (now < a.commit_deadline && a.bids.length < a.max_bids) return 'Sealed bids open';
   if (now < a.reveal_deadline && a.bids.some(b => b.status === 'COMMITTED')) return 'Reveal window';
   return 'Review and settle';
@@ -54,6 +53,7 @@ function App() {
   const [secrets, setSecrets] = useState<RevealSecret[]>(() => getStored(SECRET_KEY, []));
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [now, setNow] = useState(() => Date.now() / 1000);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [tab, setTab] = useState<'explore' | 'create'>('explore');
@@ -73,6 +73,10 @@ function App() {
 
   useEffect(() => { localStorage.setItem(TX_KEY, JSON.stringify(txs)); }, [txs]);
   useEffect(() => { localStorage.setItem(SECRET_KEY, JSON.stringify(secrets)); }, [secrets]);
+  useEffect(() => {
+    const timer = setInterval(() => setNow(Date.now() / 1000), 10000);
+    return () => clearInterval(timer);
+  }, []);
 
   const refresh = useCallback(async (target = address, wallet = account) => {
     if (!target) return;
@@ -228,8 +232,11 @@ function App() {
   const localBid = useMemo(() => auction?.bids.find(b => b.owner.toLowerCase() === account?.toLowerCase()), [auction, account]);
   const canFund = auction && account?.toLowerCase() === auction.sponsor.toLowerCase() && auction.sealed && !auction.settled && BigInt(auction.funded_wei) < BigInt(auction.budget_wei);
   const remaining = auction ? (BigInt(auction.budget_wei) - BigInt(auction.funded_wei)).toString() : '0';
-  const commitsClosed = auction && (Date.now() / 1000 >= auction.commit_deadline || auction.bids.length >= auction.max_bids);
-  const revealsClosed = auction && (Date.now() / 1000 >= auction.reveal_deadline || (commitsClosed && auction.bids.every(b => b.status !== 'COMMITTED')));
+  const commitsClosed = auction && (now >= auction.commit_deadline || auction.bids.length >= auction.max_bids);
+  const revealsClosed = auction && (now >= auction.reveal_deadline || (commitsClosed && auction.bids.every(b => b.status !== 'COMMITTED')));
+  const canSettle = auction && !auction.settled && auction.sealed &&
+    (now >= auction.resolution_deadline ||
+      (revealsClosed && auction.bids.every(b => b.status !== 'COMMITTED' && b.status !== 'REVEALED')));
   const isDemo = address?.toLowerCase() === DEMO_ADDRESS.toLowerCase();
 
   return <>
@@ -277,7 +284,7 @@ function App() {
           <aside className="panel explainer"><div className="panel-head"><span className="badge amber">!</span><h3>How the rules work</h3></div><p>A validator first checks that your criterion is observable from one UTF-8 file. Contributors then commit to a price and artifact before revealing either.</p><ol><li>Fund the exact budget.</li><li>Collect 2–8 sealed bids.</li><li>Review each revealed file against the frozen criterion.</li><li>Settle the lowest eligible price and credit any surplus.</li></ol><div className="callout"><CircleHelp size={18}/><span>At capacity, commits close early. If every bidder reveals, review can start early. All unresolved bids expire at the resolution deadline.</span></div></aside></div> : <>
           <div className="attach-bar"><label htmlFor="contract-address">CONTRACT ADDRESS</label><input id="contract-address" value={addressInput} placeholder="0x…" onChange={e => setAddressInput(e.target.value)}/><button className="secondary" onClick={() => validAddress(addressInput) ? attach(addressInput) : setError('Enter a valid 0x contract address.')}>Load contract</button><button className="icon-button" title="Refresh finalized state" onClick={() => void refresh()} disabled={!address || loading}><RefreshCcw size={17} className={loading ? 'spin' : ''}/></button></div>
            {!auction ? <div className="empty panel"><Code2 size={36}/><h3>No auction loaded</h3><p>Check the StudioNet connection, or paste another ProofBid address to inspect its finalized state.</p></div> : <>
-            <div className="auction-banner"><div><div className="eyebrow">FINALIZED CONTRACT STATE</div><h3>{auction.task}</h3><p>{auction.criterion}</p></div><span className="status-pill">{stage(auction)}</span></div>
+            <div className="auction-banner"><div><div className="eyebrow">FINALIZED CONTRACT STATE</div><h3>{auction.task}</h3><p>{auction.criterion}</p></div><span className="status-pill">{stage(auction, now)}</span></div>
             <div className="stats"><div><span>SPONSOR BUDGET</span><strong>{formatGen(auction.budget_wei)}</strong></div><div><span>FUNDED</span><strong>{formatGen(auction.funded_wei)}</strong></div><div><span>BIDS</span><strong>{auction.bids.length} / {auction.max_bids}</strong></div><div><span>WINNING PRICE</span><strong>{auction.winner ? formatGen(auction.winning_price_wei) : '—'}</strong></div></div>
             {auction.settled && <div className="public-ledger" aria-label="Finalized claimable balances"><div><span>SPONSOR · {short(auction.sponsor, 6)}</span><strong>Claimable: {publicCredits.sponsor === null ? 'Unavailable' : formatGen(publicCredits.sponsor)}</strong>{isDemo && <a href={`${explorer}/tx/${proofTx('Sponsor withdrawal')}`} target="_blank" rel="noreferrer">Withdrawal receipt <ExternalLink size={12}/></a>}</div>{auction.winner > 0 && <div><span>WINNER · {short(auction.bids[auction.winner - 1].owner, 6)}</span><strong>Claimable: {publicCredits.winner === null ? 'Unavailable' : formatGen(publicCredits.winner)}</strong>{isDemo && <a href={`${explorer}/tx/${proofTx('Winner withdrawal')}`} target="_blank" rel="noreferrer">Withdrawal receipt <ExternalLink size={12}/></a>}</div>}</div>}
             <div className="grid two"><div className="panel"><div className="panel-head"><span className="badge">01</span><h3>Sponsor controls</h3></div><div className="deadline"><Clock3 size={16}/><span>Commit closes {date(auction.commit_deadline)}</span></div><p>Frozen terms are set. Seal only when the criterion is clear enough for validators to judge from one file.</p>
@@ -294,10 +301,10 @@ function App() {
             <div className="section-heading small"><div><div className="eyebrow">BID REGISTER</div><h2>Submitted work</h2></div><span className="muted">Prices appear only after reveal</span></div>
             <div className="bid-list">{auction.bids.length ? auction.bids.map(b => <div className="bid-card" key={b.id}><div className="bid-top"><span className="bid-index">BID {String(b.id).padStart(2, '0')}</span><span className={`bid-status ${b.status.toLowerCase()}`}>{b.status}</span></div><div className="bid-main"><strong>{b.status === 'COMMITTED' ? 'Sealed artifact' : b.repo + '/' + b.path}</strong><span>{b.price_wei === '0' ? 'Price sealed' : formatGen(b.price_wei)}</span></div><div className="bid-meta"><span>{short(b.owner, 7)}</span>{b.sha && <a href={rawUrl(b.repo, b.sha, b.path)} target="_blank" rel="noreferrer">View pinned file <ExternalLink size={12}/></a>}{b.quote && <q>{b.quote}</q>}</div><div className="bid-actions">
                 {b.status === 'COMMITTED' && account?.toLowerCase() === b.owner.toLowerCase() && findSecret(b.commitment) && <button className="text-button" onClick={() => exportSecret(findSecret(b.commitment)!)}>Export reveal key</button>}
-                {b.status === 'COMMITTED' && account?.toLowerCase() === b.owner.toLowerCase() && commitsClosed && Date.now() / 1000 < auction.reveal_deadline && <button className="secondary" disabled={busy} onClick={() => void reveal(b.id, b.commitment)}>Reveal bid</button>}
-                {b.status === 'REVEALED' && revealsClosed && Date.now() / 1000 < auction.resolution_deadline && <button className="secondary" disabled={busy} onClick={() => void call(`Review bid ${b.id}`, 'review_bid', [b.id])}>Review evidence</button>}
+                {b.status === 'COMMITTED' && account?.toLowerCase() === b.owner.toLowerCase() && commitsClosed && now < auction.reveal_deadline && <button className="secondary" disabled={busy} onClick={() => void reveal(b.id, b.commitment)}>Reveal bid</button>}
+                {b.status === 'REVEALED' && revealsClosed && now < auction.resolution_deadline && <button className="secondary" disabled={busy} onClick={() => void call(`Review bid ${b.id}`, 'review_bid', [b.id])}>Review evidence</button>}
               </div></div>) : <div className="empty compact-empty">No bids committed yet.</div>}</div>
-            <div className="grid two footer-panels"><div className="panel"><div className="panel-head"><span className="badge amber"><Gavel size={16}/></span><h3>Settle & withdraw</h3></div><p>Anyone may settle when all revealed bids have final verdicts, or once the resolution deadline passes. Unreviewed bids then fail closed.</p><button className="secondary full" disabled={busy || !account || auction.settled} onClick={() => void call('Settle auction', 'settle')}>Settle auction</button><div className="divider"/><div className="claim-row"><div><span>YOUR CLAIMABLE BALANCE</span><strong>{account ? formatGen(credit) : 'Connect wallet'}</strong></div><button className="primary" disabled={busy || !account || BigInt(credit) === 0n} onClick={() => void call('Withdraw GEN', 'withdraw')}>Withdraw</button></div></div>
+            <div className="grid two footer-panels"><div className="panel"><div className="panel-head"><span className="badge amber"><Gavel size={16}/></span><h3>Settle & withdraw</h3></div><p>Anyone may settle when all revealed bids have final verdicts, or once the resolution deadline passes. Unreviewed bids then fail closed.</p><button className="secondary full" disabled={busy || !account || !canSettle} onClick={() => void call('Settle auction', 'settle')}>Settle auction</button><div className="divider"/><div className="claim-row"><div><span>YOUR CLAIMABLE BALANCE</span><strong>{account ? formatGen(credit) : 'Connect wallet'}</strong></div><button className="primary" disabled={busy || !account || BigInt(credit) === 0n} onClick={() => void call('Withdraw GEN', 'withdraw')}>Withdraw</button></div></div>
               <div className="panel"><div className="panel-head"><span className="badge purple"><GitCommitHorizontal size={16}/></span><h3>Reveal key backup</h3></div><p>Your nonce lives only in this browser unless you export it. Restore a saved JSON key here before revealing.</p><textarea className="import-box" rows={4} placeholder="Paste saved reveal JSON" value={importText} onChange={e => setImportText(e.target.value)}/><button className="secondary full" disabled={!importText} onClick={importSecret}>Import reveal key</button><div className="callout"><ShieldCheck size={17}/><span>Never publish your reveal key before the commit window closes.</span></div></div></div>
           </>}
         </>}

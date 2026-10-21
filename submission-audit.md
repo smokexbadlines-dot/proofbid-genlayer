@@ -2,32 +2,40 @@
 
 ## Decision
 
-The public read-only demonstration and its on-chain proof are ready for a reviewer. **The full app is not yet end-to-end verified:** no browser-extension wallet has completed a ProofBid write from the deployed frontend. The GenLayer Native project guide treats that as a submission readiness gate. The contract writes in the proof manifest were executed through GenLayer Studio.
+ProofBid has a public frontend and a complete, finalized StudioNet award demonstration. A separate MetaMask run from the public frontend verified deployment, rubric seal, funding, bid commitment, timeout settlement, and a full sponsor refund withdrawal. **The full frontend wallet flow is still unverified:** the operator missed the reveal window, so there is no browser-wallet reveal, validator review, winner award, or winner withdrawal receipt. Under the local GenLayer Native project guide, technical submission readiness remains **FAIL** until those core wallet actions are exercised. The prepared Portal packet is an honest draft, not a submitted contribution.
 
 | Area | Result | Evidence |
 | --- | --- | --- |
-| Contract behavior | PASS | Six direct-mode tests; finalized StudioNet deploy, two reviews, settlement, withdrawals and expected rejected reveal |
-| Live proof | PASS | `pnpm verify:proof` checks 13 finalized transactions, agreeing validator receipts for both reviews, pinned file hashes and latest finalized state |
+| Contract behavior | PASS | Six direct-mode tests; finalized StudioNet deploy, two reviews, settlement, both withdrawals, and expected rejected reveal |
+| Live award proof | PASS | `pnpm verify:proof` checks 13 transactions, agreeing review validators, pinned evidence, and finalized state |
 | Public app and source | PASS | [Public app](https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site), [public repository](https://github.com/smokexbadlines-dot/proofbid-genlayer) |
-| Wallet flows from the app | FAIL — unverified | No deployed-frontend receipt for deploy, fund, commit, reveal, review, settle or withdraw |
-| Distinct mechanism | PASS, with review risk | Price competition and one lowest eligible winner differ from fixed grant and coverage rewards in the author's prior projects |
+| Browser-wallet timeout/refund | PASS | `pnpm verify:wallet` checks six finalized transactions and final zero sponsor credit for [contract 0x4F5D…f3B5](https://explorer-studio.genlayer.com/address/0x4F5D69C2a9014205A03110DA4B154e9448c3f3B5) |
+| Browser-wallet reveal and award | FAIL — unverified | The committed bid missed its reveal deadline and forfeited; the full award demo was run through GenLayer Studio |
+| Distinct mechanism | PASS, with review risk | Sealed price competition and one lowest eligible winner differ from fixed grant and coverage rewards in earlier projects |
+
+## Browser test details
+
+The first public-app auction deployed with a 0.01 test GEN budget and two-account MetaMask setup. Deploy, `CLEAR` seal, fund, and bid commit finalized with leader `SUCCESS` and an independent agreeing validator. The operator missed the reveal deadline while preparing submission assets. At the resolution deadline, `settle()` marked the unrevealed bid `FORFEITED`; the sponsor withdrew the full 0.01 test GEN. Both transactions finalized successfully. This proves the fail-closed timeout and pull refund in the browser. It does not prove browser reveal or award.
+
+A second 0.005 test GEN auction was deployed, sealed, and funded from the other account. It received no bid before its commit deadline and remained unsettled at this audit. Its sponsor can call `settle()` and withdraw the resulting credit. A third 0.004 test GEN auction was deployed and finalized but was never sealed or funded; it holds no budget. These test runs are not successful award cases.
 
 ## Before submitting
 
-1. Use a browser wallet on StudioNet with **test GEN** to run a small ProofBid auction from the public app. Verify the wallet's transaction hashes finalize with leader `SUCCESS`, the app re-reads the contract, and the winner and sponsor can withdraw. A human must approve the wallet transactions. The installed `genlayer-js@1.1.8` uses its legacy wallet transaction path; [current GenLayer documentation](https://docs.genlayer.com/developers/decentralized-applications/writing-data) describes fee estimation for fee-charging deployments. The version difference is not a confirmed failure, but it makes a real wallet check necessary.
-2. Do not claim that the rubric seal had an agreeing independent validator: its receipt recorded leader `CLEAR`/`SUCCESS` and validator `idle`/`ERROR`. Both file reviews **did** have independent agreeing validator receipts. The [manifest](deploy/proof.json) and verifier preserve this distinction.
-3. Treat prompt-injection resistance as unproven. The direct-mode injected-file test changes the file after its hash was committed, so the contract returns `UNCLEAR` before the model sees the injected text. A stronger case would commit a pinned file that contains an instruction attempt and show an honest verdict live.
-4. Sign in to the [GenLayer Portal](https://portal.genlayer.foundation/how-it-works/), confirm the builder profile and GitHub connection, then submit the prepared [Portal packet](portal-submission.md). The public Portal describes steward review and GitHub OAuth verification; account-specific eligibility was not inspected in this audit. Under the local `genlayer-native` guide, the human owner submits.
+1. Settle the second auction at [0x1729…91ED](https://explorer-studio.genlayer.com/address/0x17291F8F8be299b9990C2CA7BD90dFB8273b91ED) and withdraw its 0.005 test GEN sponsor credit with account 0x106E…f4422. Record both finalized successful hashes.
+2. Run one browser-wallet auction with enough time for the two available accounts: sponsor deploys, seals and funds; other account commits and later reveals; validators review; anyone settles; winner and sponsor withdraw. Verify each receipt is `FINALIZED` with leader `SUCCESS`, independent validator agreement for semantic judgments, and matching state readbacks. The original complete auction already proves contract behavior through GenLayer Studio, but the frontend path still needs this check.
+3. Keep the seal evidence distinction precise: the original demo seal had leader `SUCCESS` with validator `idle`; the browser timeout auction's seal had an independent agreeing validator. Both file reviews in the original demo also had independent agreeing validators.
+4. Treat prompt-injection resistance as unproven against an actually pinned malicious file. The direct-mode injection test changes the file after its hash was committed, so the contract returns `UNCLEAR` before the model sees the injected text.
+5. The human owner submits the prepared [Portal packet](portal-submission.md). The local `genlayer-native` guide reserves Portal submission for the owner.
 
 ## Distinctiveness check
 
-[PACTPROOF](https://github.com/smokexbadlines-dot/pactproof-genlayer) already links validator-qualified evidence to a funded reward, and [Marginal Contribution Pool](https://github.com/smokexbadlines-dot/marginal-contribution-pool-genlayer) already combines commit-reveal evidence with deterministic payout. ProofBid's added mechanism is sealed **price** competition: each eligible file is an offer, and code clears exactly one cheapest offer while returning the sponsor's surplus. That distinction is real, but stewards may still see overlap in the broader evidence-to-payment pattern. Lead with the auction outcome, not generic escrow language.
+[PACTPROOF](https://github.com/smokexbadlines-dot/pactproof-genlayer) links validator-qualified evidence to a funded reward. [Marginal Contribution Pool](https://github.com/smokexbadlines-dot/marginal-contribution-pool-genlayer) combines commit-reveal evidence with deterministic payout. ProofBid adds sealed **price** competition: each eligible file is an offer, and code clears exactly one cheapest offer while returning the sponsor's surplus. Stewards may still see overlap in the broader evidence-to-payment pattern.
 
 ## Checks performed
 
-- `pnpm build`: PASS.
+- `pnpm build`: PASS after the deadline button update.
 - `pnpm verify:proof`: PASS; winner bid 2 at 0.4 StudioNet test GEN.
-- Six Python direct-mode tests: PASS on this audit.
-- Public Sites project: active, access mode `public`.
-- Repository `main`: public and pushed.
-- Read-only frontend: preloads the finalized auction and displays both verdicts, settlement, pinned files, sponsor and winner claimable balances, and withdrawal receipts without a wallet.
+- `pnpm verify:wallet`: PASS for deploy, seal, fund, commit, timeout settlement, and refund withdrawal.
+- Six Python direct-mode tests: PASS in the earlier audit.
+- Public Sites project: active with public access.
+- Public repository: previously pushed; local audit and frontend updates require a final source sync.

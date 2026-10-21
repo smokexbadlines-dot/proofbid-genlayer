@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
-    "verify:proof": "node deploy/verify-proof.mjs"
+    "verify:proof": "node deploy/verify-proof.mjs",
+    "verify:wallet": "node deploy/verify-browser-wallet.mjs"
   },
   "dependencies": {
     "genlayer-js": "1.1.8",

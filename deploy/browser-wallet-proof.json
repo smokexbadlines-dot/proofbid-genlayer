@@ -1,0 +1,31 @@
+{
+  "status": "PROVEN",
+  "scenario": "A bid was committed through the public frontend, but the operator missed the reveal deadline. Timeout settlement forfeited that bid; the sponsor withdrew the full test GEN budget through the public frontend. This does not prove browser reveal or award.",
+  "network": "studionet",
+  "frontend_url": "https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site",
+  "contract_address": "0x4F5D69C2a9014205A03110DA4B154e9448c3f3B5",
+  "source_repo": "smokexbadlines-dot/proofbid-genlayer",
+  "source_commit_at_deploy": "70755fa770c5f931fb5783cdf7b9cfebc68c4316",
+  "source_sha256": "b0ba43b9efe09093b874ff7fe215075001a56e0d73a950446fa86d34e5e10ef8",
+  "sponsor": "0xfbCD0A496d70FdE49760210a282714dfdA098b84",
+  "bidder": "0x106E2A74C9233e1981b0B5692355163A825F4422",
+  "transactions": [
+    {"label":"Browser wallet deploy","hash":"0xc226585d63b9338aaa9f76cc82dc485a85f1612ae92480a4f288ae51a9dfc7de","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","require_validator_agreement":true},
+    {"label":"Browser wallet seal","hash":"0x9c73bd73e1bb8467169ad81969d3e41da239297c3cd90a31ee63d65e72bdc435","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","expected_payload":"\"CLEAR\"","require_validator_agreement":true},
+    {"label":"Browser wallet fund 0.01 test GEN","hash":"0x17efeda352f767f4919417932348eb15ecae1f22259add365dba1caed41313e9","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","require_validator_agreement":true},
+    {"label":"Browser wallet commit bid","hash":"0x704aa37c48dc9b74b64ae2664702fe47b8cfda7054d08d80fd898b5ae76d5b7c","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","require_validator_agreement":true},
+    {"label":"Browser wallet timeout settlement","hash":"0x5ce8e216bc92fa5b6ad76ed7e712e837a2e7f19e5c00966d8c856d1a2e99805b","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","require_validator_agreement":true},
+    {"label":"Browser wallet sponsor refund withdrawal","hash":"0xb9b85935e350a66f1ad00b8bcdad2b685531ab99f769b1edf22ac573363d47a2","from":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","expected_execution":"SUCCESS","require_validator_agreement":true}
+  ],
+  "expected_snapshot": {
+    "sealed": true,
+    "budget_wei": "10000000000000000",
+    "funded_wei": "10000000000000000",
+    "settled": true,
+    "winner": 0
+  },
+  "expected_bid": {"id":1,"status":"FORFEITED"},
+  "expected_accounts": [
+    {"address":"0xfbCD0A496d70FdE49760210a282714dfdA098b84","claimable_wei":"0"}
+  ]
+}
