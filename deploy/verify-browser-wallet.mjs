@@ -4,7 +4,10 @@ import { createClient } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
 import { TransactionHashVariant } from 'genlayer-js/types';
 
-const proof = JSON.parse(readFileSync(new URL('./browser-wallet-proof.json', import.meta.url), 'utf8'));
+const manifestArg = process.argv.find(arg => arg.startsWith('--manifest='));
+const manifestName = manifestArg?.slice('--manifest='.length) || 'browser-wallet-proof.json';
+if (!/^browser-[a-z-]+\.json$/.test(manifestName)) throw new Error('Invalid browser proof manifest name.');
+const proof = JSON.parse(readFileSync(new URL(`./${manifestName}`, import.meta.url), 'utf8'));
 if (proof.status !== 'PROVEN' && !process.argv.includes('--partial')) {
   throw new Error('Browser-wallet proof is still in progress. Use --partial to inspect finalized steps.');
 }

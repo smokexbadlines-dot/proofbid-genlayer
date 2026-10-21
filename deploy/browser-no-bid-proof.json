@@ -1,0 +1,29 @@
+{
+  "status": "PROVEN",
+  "scenario": "No bid arrived before the commit deadline. The public frontend settled the funded auction as REFUNDED and the sponsor withdrew the full StudioNet test GEN budget.",
+  "network": "studionet",
+  "frontend_url": "https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site",
+  "contract_address": "0x17291F8F8be299b9990C2CA7BD90dFB8273b91ED",
+  "source_repo": "smokexbadlines-dot/proofbid-genlayer",
+  "source_commit_at_deploy": "70755fa770c5f931fb5783cdf7b9cfebc68c4316",
+  "source_sha256": "b0ba43b9efe09093b874ff7fe215075001a56e0d73a950446fa86d34e5e10ef8",
+  "sponsor": "0x106E2A74C9233e1981b0B5692355163A825F4422",
+  "transactions": [
+    {"label":"Browser wallet deploy","hash":"0x047ebcb30a39614a051686a7625b8ccf511f0b2f65e5900f9cf6cdc4cfa13cfa","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","require_validator_agreement":true},
+    {"label":"Browser wallet seal","hash":"0x91493222baa91756335508f6316400ce9d3e3ca119ed4a50f9a003f25a17cae0","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","expected_payload":"\"CLEAR\"","require_validator_agreement":true},
+    {"label":"Browser wallet fund 0.005 test GEN","hash":"0xc35e42040de5eb6d983c46e90d2ea3ceab1fa0a68b91cb18f5b8a35470453ae7","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","require_validator_agreement":false},
+    {"label":"Browser wallet no-bid settlement","hash":"0x17723a503f1a20925882080b84c9d19a0fb8b0e1fd08ed9c9e4c169b7f72c6ac","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","expected_payload":"\"REFUNDED\"","require_validator_agreement":false},
+    {"label":"Browser wallet sponsor withdrawal","hash":"0xc18d35b76bc39f97a9880964620894d08fbad2a282de2d24d5c3e3461bc9d6dc","from":"0x106E2A74C9233e1981b0B5692355163A825F4422","expected_execution":"SUCCESS","require_validator_agreement":false}
+  ],
+  "expected_snapshot": {
+    "sealed": true,
+    "budget_wei": "5000000000000000",
+    "funded_wei": "5000000000000000",
+    "settled": true,
+    "winner": 0,
+    "bids": []
+  },
+  "expected_accounts": [
+    {"address":"0x106E2A74C9233e1981b0B5692355163A825F4422","claimable_wei":"0"}
+  ]
+}

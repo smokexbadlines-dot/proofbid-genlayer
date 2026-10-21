@@ -7,7 +7,8 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc --noEmit && vite build",
     "verify:proof": "node deploy/verify-proof.mjs",
-    "verify:wallet": "node deploy/verify-browser-wallet.mjs"
+    "verify:wallet": "node deploy/verify-browser-wallet.mjs",
+    "verify:no-bid": "node deploy/verify-browser-wallet.mjs --manifest=browser-no-bid-proof.json"
   },
   "dependencies": {
     "genlayer-js": "1.1.8",
