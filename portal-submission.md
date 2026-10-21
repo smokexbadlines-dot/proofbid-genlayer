@@ -1,6 +1,6 @@
 # ProofBid Portal packet
 
-**Status:** Technically proven on StudioNet. Public app access and Portal submission remain pending explicit approval. The Sites preview is private.
+**Status:** Public app and live StudioNet proof ready for review. Portal submission remains with the human owner.
 
 **Contribution type:** Project / deployed Intelligent Contract
 
@@ -14,7 +14,7 @@
 
 ## Links
 
-- Private app preview: https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site
+- Public app: https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site
 - Public source: https://github.com/smokexbadlines-dot/proofbid-genlayer
 - Pinned contract source: https://github.com/smokexbadlines-dot/proofbid-genlayer/blob/f625b40fd83ef7e7ab5de65cb79b61604490d430/contracts/proof_bid.py
 - Contract Explorer: https://explorer-studio.genlayer.com/address/0x0cF6733050F0c338B13ea76Aff1472ddC5755d26
@@ -33,7 +33,8 @@
 | Technical behavior, local tests, production build | PASS |
 | Distinct mechanism versus earlier projects | PASS |
 | Live finalized evidence and reproducible verifier | PASS |
-| Publicly accessible frontend | PENDING: current Sites audience is private |
-| Portal submission | PENDING: requires explicit user approval |
+| Publicly accessible frontend | PASS |
+| Frontend wallet writes from a browser extension | NOT VERIFIED; contract writes and withdrawals were exercised in Studio |
+| Portal submission | PENDING: human owner submits |
 
 The seal transaction has a successful leader result but an `idle` validator receipt. Both file reviews have independent agreeing validator receipts. All amounts are StudioNet test GEN.

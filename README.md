@@ -4,6 +4,8 @@ ProofBid is a standalone GenLayer Native reverse auction for public, evidence-ba
 
 **Current evidence status:** A complete [StudioNet auction](https://explorer-studio.genlayer.com/address/0x0cF6733050F0c338B13ea76Aff1472ddC5755d26) is finalized. The [proof manifest](deploy/proof.json) records 13 transactions, two independent agreeing review receipts, settlement, both withdrawals, and an expected rejected reveal. Run `pnpm verify:proof` to check the receipts, pinned evidence, deployed code, and latest finalized state. The seal receipt reports leader `SUCCESS` and validator `idle`; the manifest records this precisely and does not claim validator agreement for that step. All GEN amounts in the demo are StudioNet test funds.
 
+**Live app:** [proofbid-genlayer-20261021.opalfairy1.chatgpt.site](https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site). It loads the finalized auction automatically without a wallet. Browser-extension writes have not yet been tested; the recorded live transactions were sent through GenLayer Studio.
+
 ```mermaid
 flowchart LR
   S[Sponsor freezes criterion and budget] --> C[ProofBid contract]
