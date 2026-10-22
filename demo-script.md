@@ -1,6 +1,6 @@
 # Two-minute ProofBid demo script
 
-1. **0:00–0:20** Open the [public app](https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site) and its preloaded contract `0x0cF6733050F0c338B13ea76Aff1472ddC5755d26`. Explain the frozen task, one acceptance criterion, 0.5 test GEN budget, and two-bid capacity. The app reads finalized onchain state without a wallet.
+1. **0:00–0:20** Open the [public app](https://smokexbadlines-dot.github.io/proofbid-genlayer/) and its preloaded contract `0x0cF6733050F0c338B13ea76Aff1472ddC5755d26`. Explain the frozen task, one acceptance criterion, 0.5 test GEN budget, and two-bid capacity. The app reads finalized onchain state without a wallet.
 2. **0:20–0:45** Open the public source commit. Show `docs/partial.md` and `docs/complete.md`; the first lacks SQLite steps, while the second has migration and rollback steps for both engines.
 3. **0:45–1:10** Show the finalized commit and reveal transactions. Explain that commitments hid each price with a 32-byte nonce until the commit window closed. Open each pinned file and its exact quote.
 4. **1:10–1:35** Open [cheaper review](https://explorer-studio.genlayer.com/tx/0xb63c253b98ccd87767b68f9815d193680ab3bdc531eecce7e7bbb27dd1bcb9a4) and [complete review](https://explorer-studio.genlayer.com/tx/0x52a3f6ab65dcfbc321da75ef0dff3788b13651c84e19c011c5f9952f42c50b54). The cheaper file is `INELIGIBLE`; the complete one is `ELIGIBLE`. Each review has an independent agreeing validator receipt.

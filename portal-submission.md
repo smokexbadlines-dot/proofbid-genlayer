@@ -14,7 +14,7 @@
 
 ## Links
 
-- Public app: https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site
+- Public app: https://smokexbadlines-dot.github.io/proofbid-genlayer/
 - Public source: https://github.com/smokexbadlines-dot/proofbid-genlayer
 - Pinned contract source: https://github.com/smokexbadlines-dot/proofbid-genlayer/blob/f625b40fd83ef7e7ab5de65cb79b61604490d430/contracts/proof_bid.py
 - Contract Explorer: https://explorer-studio.genlayer.com/address/0x0cF6733050F0c338B13ea76Aff1472ddC5755d26
