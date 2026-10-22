@@ -1,6 +1,6 @@
 # Build and verify a ProofBid auction
 
-ProofBid separates a judgment that needs GenLayer from decisions ordinary code can make. A sponsor describes a deliverable and freezes one checkable criterion. Bidders secretly commit to prices and public files. The validator committee decides whether each file satisfies the criterion, while contract code chooses the cheapest eligible bid. This tutorial follows the [finalized StudioNet auction](https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site) using the two files in `docs/`.
+ProofBid separates a judgment that needs GenLayer from decisions ordinary code can make. A sponsor describes a deliverable and freezes one checkable criterion. Bidders secretly commit to prices and public files. The validator committee decides whether each file satisfies the criterion, while contract code chooses the cheapest eligible bid. This tutorial follows the [finalized StudioNet auction](https://smokexbadlines-dot.github.io/proofbid-genlayer/) using the two files in `docs/`.
 
 ![The public ProofBid app shows the ineligible low bid, eligible winner, and sponsor surplus.](demo-proof.png)
 

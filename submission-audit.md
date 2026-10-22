@@ -10,7 +10,7 @@
 | Competitive mechanism | PASS | [Original auction](https://explorer-studio.genlayer.com/address/0x0cF6733050F0c338B13ea76Aff1472ddC5755d26): cheaper incomplete bid INELIGIBLE; complete 0.4 test GEN bid ELIGIBLE and awarded |
 | Full frontend wallet flow | PASS | [Browser award manifest](deploy/browser-award-proof.json), `pnpm verify:award`, [contract](https://explorer-studio.genlayer.com/address/0x0701Dedfee0a05a9Fd3e2634f3072e44d5A41e18) |
 | Failure paths | PASS | `pnpm verify:wallet` checks forfeited unrevealed bid and sponsor refund; `pnpm verify:no-bid` checks empty auction refund |
-| Public app and source | PASS | [Public app](https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site), [public repository](https://github.com/smokexbadlines-dot/proofbid-genlayer) |
+| Public app and source | PASS | [Public app](https://smokexbadlines-dot.github.io/proofbid-genlayer/), [public repository](https://github.com/smokexbadlines-dot/proofbid-genlayer) |
 | Distinctiveness | PASS, with review risk | Sealed price competition and one cheapest eligible winner differ from fixed grants and coverage rewards in earlier projects |
 
 ## Receipt precision
@@ -31,7 +31,7 @@ Capacity one closes bidding after a single finalized commitment and enabled the 
 
 ## Reproduction
 
-1. Open the [public app](https://proofbid-genlayer-20261021.opalfairy1.chatgpt.site) to inspect the preloaded two-bid auction. Use the `?contract=0x0701Dedfee0a05a9Fd3e2634f3072e44d5A41e18` query to inspect the browser award.
+1. Open the [public app](https://smokexbadlines-dot.github.io/proofbid-genlayer/) to inspect the preloaded two-bid auction. Use the `?contract=0x0701Dedfee0a05a9Fd3e2634f3072e44d5A41e18` query to inspect the browser award.
 2. Run `pnpm build` and `python -m pytest -q tests/test_proof_bid.py` with `genlayer-test` installed.
 3. Run `pnpm verify:proof`, `pnpm verify:award`, `pnpm verify:wallet`, and `pnpm verify:no-bid`. Each verifier checks finalized receipts and latest final contract state; the award verifier also checks both zero claimable balances.
 4. The human owner submits the prepared [Portal packet](portal-submission.md).
