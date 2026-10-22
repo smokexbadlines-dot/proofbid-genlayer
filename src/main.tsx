@@ -242,7 +242,7 @@ function App() {
   return <>
     <div className="ambient ambient-one"/><div className="ambient ambient-two"/>
     <header className="topbar wrap">
-      <a className="brand" href="/" aria-label="ProofBid home"><span className="brand-icon"><Fingerprint size={25}/></span><span>Proof<span>Bid</span></span></a>
+      <a className="brand" href={import.meta.env.BASE_URL} aria-label="ProofBid home"><span className="brand-icon"><Fingerprint size={25}/></span><span>Proof<span>Bid</span></span></a>
       <div className="top-right"><span className="network"><i/> STUDIO<span>NET</span></span>
         <button className="wallet-button" disabled={busy} onClick={() => void (async () => { try { setAccount(await connectWallet()); setError(''); } catch (e) { setError(e instanceof Error ? e.message : String(e)); } })()}>
           <Wallet size={16}/> {account ? short(account, 5) : 'Connect wallet'}
